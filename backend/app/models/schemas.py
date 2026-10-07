@@ -1,0 +1,74 @@
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class JobRequirements(BaseModel):
+    required_skills: list[str] = Field(default_factory=list)
+    preferred_skills: list[str] = Field(default_factory=list)
+    min_years_experience: Optional[float] = None
+    seniority: Optional[str] = None
+    summary: str = ""
+
+
+class CandidateInfo(BaseModel):
+    name: str = "Unknown"
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    current_title: Optional[str] = None
+    skills: list[str] = Field(default_factory=list)
+    total_years_experience: float = 0
+    education: list[str] = Field(default_factory=list)
+    summary: str = ""
+
+
+class MatchEval(BaseModel):
+    semantic_score: int = Field(ge=0, le=100)
+    explanation: str
+
+
+class JobCreate(BaseModel):
+    title: str = Field(min_length=2, max_length=200)
+    description: str = Field(min_length=30)
+
+
+class JobOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    title: str
+    description: str
+    requirements: JobRequirements
+    resume_count: int = 0
+    created_at: datetime
+
+
+class ResumeOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    filename: str
+    candidate: CandidateInfo
+    created_at: datetime
+
+
+class UploadFailure(BaseModel):
+    filename: str
+    reason: str
+
+
+class UploadResponse(BaseModel):
+    uploaded: list[ResumeOut]
+    failed: list[UploadFailure]
+
+
+class MatchOut(BaseModel):
+    resume_id: int
+    filename: str
+    candidate: CandidateInfo
+    score: float
+    matching_skills: list[str]
+    missing_skills: list[str]
+    experience_fit: str
+    experience_note: str
+    explanation: str
+    breakdown: dict
