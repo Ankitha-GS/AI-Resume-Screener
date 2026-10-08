@@ -1,57 +1,121 @@
-# AI-Hire
+# AI Resume Screener
 
-AI-powered resume screening and candidate matching.
-Create a job, upload PDF resumes, and get candidates ranked with a match score, matching and missing skills, experience fit, and a plain-language explanation.
+An AI-powered recruitment platform that helps recruiters create job requirements, upload candidate resumes, and automatically rank candidates based on their relevance to the job description.
 
-## How the hybrid matching works
+The system combines resume processing, structured candidate-job matching, and AI-generated explanations to make the initial screening process faster and more consistent.
 
-| Part | Weight | Source |
-|------|--------|--------|
-| Skill overlap | 55% | Deterministic: required skills count fully, preferred count half |
-| Experience fit | 15% | Deterministic: candidate years vs. job minimum |
-| Semantic fit | 30% | Gemini judges real experience and writes the explanation |
+---
 
-If Gemini is unavailable, the app falls back to keyword extraction and re-normalises the weights, so it still works offline.
+## 🚀 Live Demo
 
-## Run locally
+**Frontend:**  
+https://YOUR-VERCEL-URL.vercel.app
 
-### Backend
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env            # add your GEMINI_API_KEY
-uvicorn app.main:app --reload
-```
-API docs: http://localhost:8000/docs. Run tests with `pytest`.
+**Backend API:**  
+https://ai-resume-screener-xdfp.onrender.com
 
-### Frontend
-```bash
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
-Open http://localhost:5173.
+**API Documentation:**  
+https://ai-resume-screener-xdfp.onrender.com/docs
 
-## Deploy
+> Replace the frontend URL above with your actual Vercel URL.
 
-1. Push to GitHub.
-2. **Database**: on Render, create a PostgreSQL instance and copy its *Internal Database URL*.
-3. **Backend (Render Web Service)**, root directory `backend`:
-   - Build: `pip install -r requirements.txt`
-   - Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-   - Env: `GEMINI_API_KEY`, `DATABASE_URL`, `CORS_ORIGINS=https://your-app.vercel.app`
-4. **Frontend (Vercel)**, root directory `frontend`, framework Vite:
-   - Env: `VITE_API_URL=https://your-backend.onrender.com/api`
+---
 
-## Added beyond the original plan
+## 📌 Problem Statement
 
-- `database.py` and `db_models.py` (SQLAlchemy tables for jobs, resumes, results)
-- Offline fallback when Gemini is unavailable or rate-limited
-- Parallel AI calls when ranking, retries, per-file upload errors
-- Delete jobs and resumes, re-rank, and an automated end-to-end test
+Recruiters often receive a large number of resumes for a single job opening. Manually reviewing every resume can be time-consuming and makes it difficult to consistently compare candidates against the same job requirements.
 
-## Next ideas
-Authentication, OCR for scanned PDFs, DOCX support, Alembic migrations, CSV export of rankings.
+AI Resume Screener addresses this problem by providing an automated first-level screening system.
+
+The application allows recruiters to:
+
+- Create a job with a detailed job description
+- Upload multiple candidate resumes
+- Analyze candidate information
+- Compare candidates against the job requirements
+- Generate candidate match scores
+- Rank candidates
+- Provide explanations for the ranking
+
+This helps recruiters quickly identify the most relevant candidates for further evaluation.
+
+---
+
+## ✨ Key Features
+
+### Job Management
+- Create job postings
+- Store job titles and descriptions
+- Maintain job information in PostgreSQL
+
+### Resume Processing
+- Upload candidate resumes in PDF format
+- Process multiple resumes for a single job
+- Store resume information for future reference
+
+### AI-Powered Candidate Matching
+- Compare candidate resumes against job requirements
+- Generate candidate relevance scores
+- Rank candidates based on their match with the job
+
+### Explainable Results
+- Provide reasons behind candidate rankings
+- Highlight relevant candidate information
+- Help recruiters understand why a candidate received a particular score
+
+### Persistent Database
+- PostgreSQL database using Neon
+- Stores jobs, resumes, and candidate matching results
+
+### REST API
+- FastAPI-based backend
+- Structured API endpoints
+- Interactive Swagger API documentation
+
+### Web Application
+- Modern frontend interface
+- Job creation workflow
+- Resume upload
+- Candidate ranking interface
+- Results visualization
+
+---
+
+## 🏗️ System Architecture
+
+```text
+                    ┌─────────────────────┐
+                    │      Recruiter      │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │     Frontend        │
+                    │   Web Application   │
+                    └──────────┬──────────┘
+                               │
+                         REST API
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │      FastAPI        │
+                    │       Backend       │
+                    └──────────┬──────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                │                             │
+                ▼                             ▼
+       ┌─────────────────┐          ┌─────────────────┐
+       │ Resume Analysis │          │  AI Processing  │
+       │   & Matching    │          │  & Explanation  │
+       └────────┬────────┘          └────────┬────────┘
+                │                            │
+                └──────────────┬─────────────┘
+                               ▼
+                    ┌─────────────────────┐
+                    │ PostgreSQL / Neon   │
+                    │                     │
+                    │ • Jobs              │
+                    │ • Resumes           │
+                    │ • Match Results      │
+                    └─────────────────────┘
