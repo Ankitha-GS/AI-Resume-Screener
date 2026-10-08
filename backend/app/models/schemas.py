@@ -5,28 +5,27 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class JobRequirements(BaseModel):
-    required_skills: list[str] = Field(default_factory=list)
-    preferred_skills: list[str] = Field(default_factory=list)
-    min_years_experience: Optional[float] = None
-    seniority: Optional[str] = None
-    summary: str = ""
+    required_skills: list[str]
+    preferred_skills: list[str]
+    min_years_experience: Optional[float]
+    seniority: Optional[str]
+    summary: str
 
 
 class CandidateInfo(BaseModel):
-    name: str = "Unknown"
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    current_title: Optional[str] = None
-    skills: list[str] = Field(default_factory=list)
-    total_years_experience: float = 0
-    education: list[str] = Field(default_factory=list)
-    summary: str = ""
+    name: str
+    email: Optional[str]
+    phone: Optional[str]
+    current_title: Optional[str]
+    skills: list[str]
+    total_years_experience: float
+    education: list[str]
+    summary: str
 
 
 class MatchEval(BaseModel):
     semantic_score: int = Field(ge=0, le=100)
     explanation: str
-
 
 class JobCreate(BaseModel):
     title: str = Field(min_length=2, max_length=200)

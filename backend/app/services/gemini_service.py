@@ -99,10 +99,12 @@ DESCRIPTION:
     # Offline fallback
     years = [int(y) for y in re.findall(r"(\d+)\+?\s*(?:years|yrs)", description.lower())]
     return JobRequirements(
-        required_skills=find_skills(description),
-        min_years_experience=min(years) if years else None,
-        summary="Requirements detected with keyword matching (Gemini unavailable).",
-    )
+    required_skills=find_skills(description),
+    preferred_skills=[],
+    min_years_experience=min(years) if years else None,
+    seniority=None,
+    summary="Requirements detected with keyword matching (Gemini unavailable).",
+)
 
 
 def extract_candidate(resume_text: str) -> CandidateInfo:
@@ -123,10 +125,15 @@ RESUME:
     years = [int(y) for y in re.findall(r"(\d+)\+?\s*(?:years|yrs)", resume_text.lower())]
     first_line = resume_text.strip().splitlines()[0][:80]
     return CandidateInfo(
-        name=first_line, email=email.group(0) if email else None,
-        skills=find_skills(resume_text), total_years_experience=max(years) if years else 0,
-        summary="Extracted with keyword matching (Gemini unavailable).",
-    )
+    name=first_line,
+    email=email.group(0) if email else None,
+    phone=None,
+    current_title=None,
+    skills=find_skills(resume_text),
+    total_years_experience=max(years) if years else 0,
+    education=[],
+    summary="Extracted with keyword matching (Gemini unavailable).",
+)
 
 
 def evaluate_match(job_title: str, req: JobRequirements, cand: CandidateInfo, resume_text: str) -> MatchEval | None:
