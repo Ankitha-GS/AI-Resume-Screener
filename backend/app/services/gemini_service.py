@@ -26,27 +26,59 @@ def _get_client():
         _client = genai.Client(api_key=settings.GEMINI_API_KEY)
     return _client
 
-
 def _generate(prompt: str, schema: type[BaseModel], retries: int = 2) -> BaseModel:
     from google.genai import types
 
+    # Convert Pydantic model to JSON schema
+    response_schema = schema.model_json_schema()
+
+    # Gemini does not support "default" in response schemas.
+    # Remove it recursively from the entire schema.
+    def remove_defaults(obj):
+        if isinstance(obj, dict):
+            obj.pop("default", None)
+            for value in obj.values():
+                remove_defaults(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                remove_defaults(item)
+
+    remove_defaults(response_schema)
+
     config = types.GenerateContentConfig(
         response_mime_type="application/json",
-        response_schema=schema,
+        response_schema=response_schema,
         temperature=0.1,
     )
+
     last = None
+
     for attempt in range(retries + 1):
         try:
             resp = _get_client().models.generate_content(
-                model=settings.GEMINI_MODEL, contents=prompt, config=config
+                model=settings.GEMINI_MODEL,
+                contents=prompt,
+                config=config,
             )
-            raw = re.sub(r"^```(?:json)?|```$", "", (resp.text or "").strip(), flags=re.M).strip()
+
+            raw = re.sub(
+                r"^```(?:json)?|```$",
+                "",
+                (resp.text or "").strip(),
+                flags=re.M,
+            ).strip()
+
             return schema.model_validate(json.loads(raw))
-        except Exception as exc:  # network, quota, bad JSON...
+
+        except Exception as exc:
             last = exc
-            log.warning("Gemini attempt %s failed: %s", attempt + 1, exc)
+            log.warning(
+                "Gemini attempt %s failed: %s",
+                attempt + 1,
+                exc,
+            )
             time.sleep(1.5 * (attempt + 1))
+
     raise RuntimeError(f"Gemini request failed: {last}")
 
 
