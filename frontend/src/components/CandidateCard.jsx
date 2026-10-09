@@ -1,26 +1,59 @@
-const LABELS = { skills: "Skills match", experience: "Experience fit", semantic: "AI fit" };
-function tone(score) { if (score >= 75) return "high"; if (score >= 50) return "mid"; return "low"; }
+const LABELS = { skills: "Skills", experience: "Experience", semantic: "AI fit" };
 
-export default function CandidateCard({ rank, m, Icon }) {
-  const c = m.candidate || {};
-  const score = Math.round(m.score || 0);
-  const verdict = score >= 75 ? "Higher overall match" : score >= 50 ? "Partial overall match" : "Lower overall match";
-  return <article className="candidate-card">
-    <div className="candidate-rank">{String(rank).padStart(2, "0")}</div>
-    <div className="candidate-content">
-      <div className="candidate-topline">
-        <div className="candidate-identity"><span className={`candidate-avatar avatar-${rank % 4}`}>{(c.name || "?").trim().charAt(0).toUpperCase()}</span><div><h3>{c.name || "Unnamed candidate"}</h3><p>{[c.current_title, c.email, m.filename].filter(Boolean).join(" · ")}</p></div></div>
-        <div className={`match-score ${tone(score)}`}><strong>{score}<small>%</small></strong><span>overall fit</span></div>
+function tone(score) {
+  if (score >= 75) return "high";
+  if (score >= 50) return "mid";
+  return "low";
+}
+
+export default function CandidateCard({ rank, m }) {
+  const c = m.candidate;
+  return (
+    <article className="candidate">
+      <div className="cand-head">
+        <div className={`score ${tone(m.score)}`}>
+          <span className="score-num">{Math.round(m.score)}</span>
+          <span className="score-cap">of 100</span>
+        </div>
+        <div>
+          <h3>#{rank} {c.name}</h3>
+          <p className="muted">
+            {[c.current_title, c.email, m.filename].filter(Boolean).join("  |  ")}
+          </p>
+        </div>
       </div>
-      <div className="candidate-meter"><span style={{ width: `${Math.max(0, Math.min(100, score))}%` }}/></div>
-      <div className="candidate-verdict"><span className={`verdict-dot ${tone(score)}`}/><strong>{verdict}</strong><span className="verdict-divider">·</span><span>{m.experience_fit || "Experience not assessed"}</span></div>
-      <p className="candidate-explanation">{m.explanation || "No additional explanation was returned."}</p>
-      <div className="score-breakdown">{Object.entries(m.breakdown || {}).map(([k, v]) => <div className="breakdown-item" key={k}><span>{LABELS[k] || k}</span><strong>{Math.round(v.value)}<small>/100</small></strong><div className="mini-track"><span style={{ width: `${Math.max(0, Math.min(100, v.value))}%` }}/></div><small className="weight-label">{Math.round((v.weight || 0) * 100)}% weight</small></div>)}</div>
-      <div className="candidate-evidence-grid">
-        <section><div className="evidence-heading"><span className="evidence-symbol positive"><Icon name="check" size={14}/></span><h4>Matching skills</h4><span className="evidence-count">{m.matching_skills?.length || 0}</span></div><div className="evidence-chips">{m.matching_skills?.length ? m.matching_skills.map((s) => <span className="evidence-chip matched" key={s}>{s}</span>) : <p className="subtle-copy">No matching skills were returned.</p>}</div></section>
-        <section><div className="evidence-heading"><span className="evidence-symbol partial">!</span><h4>Missing required skills</h4><span className="evidence-count">{m.missing_skills?.length || 0}</span></div><div className="evidence-chips">{m.missing_skills?.length ? m.missing_skills.map((s) => <span className="evidence-chip missing" key={s}>{s}</span>) : <p className="subtle-copy">No missing required skills were returned.</p>}</div></section>
+
+      <div className="breakdown" aria-label="Score breakdown">
+        {Object.entries(m.breakdown).map(([k, v]) => (
+          <div key={k} className="bd-row">
+            <span>{LABELS[k] || k}</span>
+            <div className="bar"><i style={{ width: `${v.value}%` }} /></div>
+            <b>{Math.round(v.value)}</b>
+          </div>
+        ))}
       </div>
-      {m.experience_note && <div className="experience-note"><strong>Experience note</strong><p>{m.experience_note}</p></div>}
-    </div>
-  </article>;
+
+      <p className="explain">{m.explanation}</p>
+
+      <div className="cols">
+        <div>
+          <h4>Matching skills</h4>
+          <div className="chips">
+            {m.matching_skills.length ? m.matching_skills.map((s) => <span key={s} className="chip ok">{s}</span>) : <span className="muted">None found</span>}
+          </div>
+        </div>
+        <div>
+          <h4>Missing skills</h4>
+          <div className="chips">
+            {m.missing_skills.length ? m.missing_skills.map((s) => <span key={s} className="chip miss">{s}</span>) : <span className="muted">Nothing missing</span>}
+          </div>
+        </div>
+        <div>
+          <h4>Experience fit</h4>
+          <p><strong>{m.experience_fit}</strong></p>
+          <p className="muted">{m.experience_note}</p>
+        </div>
+      </div>
+    </article>
+  );
 }
