@@ -8,6 +8,7 @@ class JobRequirements(BaseModel):
     required_skills: list[str]
     preferred_skills: list[str]
     min_years_experience: Optional[float]
+    max_years_experience: Optional[float]
     seniority: Optional[str]
     summary: str
 
@@ -26,6 +27,13 @@ class CandidateInfo(BaseModel):
 class MatchEval(BaseModel):
     semantic_score: int = Field(ge=0, le=100)
     explanation: str
+    
+class RequirementEvaluation(BaseModel):
+    requirement: str
+    matched: bool
+    evidence: str
+    confidence: int = Field(ge=0, le=100)
+
 
 class JobCreate(BaseModel):
     title: str = Field(min_length=2, max_length=200)
