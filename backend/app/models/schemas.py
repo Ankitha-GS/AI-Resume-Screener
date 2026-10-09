@@ -8,7 +8,7 @@ class JobRequirements(BaseModel):
     required_skills: list[str]
     preferred_skills: list[str]
     min_years_experience: Optional[float]
-    max_years_experience: Optional[float]
+    max_years_experience: Optional[float] = None
     seniority: Optional[str]
     summary: str
 
