@@ -28,7 +28,7 @@ function Sidebar() {
   return <aside className="sidebar">
     <Link to="/" className="brand">
       <span className="brand-mark"><Icon name="leaf" size={22}/></span>
-      <span>fieldnote<span className="brand-period">.</span><small>HIRING WORKSPACE</small></span>
+      <span>AI Resume Screener<small>RESUME RANKING WORKSPACE</small></span>
     </Link>
     <div className="side-label">WORKSPACE</div>
     <nav className="side-nav">
@@ -37,7 +37,7 @@ function Sidebar() {
     </nav>
     <div className="sidebar-bottom">
       <div className="side-note"><span className="note-icon"><Icon name="spark" size={17}/></span><div><strong>Thoughtful hiring.</strong><p>Clear evidence. Better decisions.</p></div></div>
-      <div className="profile-row"><span className="avatar">A</span><div><strong>Recruiter workspace</strong><small>Personal account</small></div><span className="profile-dot"/></div>
+      
     </div>
   </aside>;
 }
@@ -46,8 +46,8 @@ export default function App() {
   return <div className="app-shell">
     <Sidebar/>
     <div className="main-shell">
-      <header className="mobile-header"><Link to="/" className="brand"><span className="brand-mark"><Icon name="leaf" size={20}/></span>fieldnote<span className="brand-period">.</span></Link><span className="mobile-tag">HIRING WORKSPACE</span></header>
-      <div className="utility-bar"><div className="breadcrumb">Workspace <span>/</span> <strong>Talent screening</strong></div><div className="utility-right"><span className="status-dot"/> All systems connected <span className="utility-avatar">A</span></div></div>
+      <header className="mobile-header"><Link to="/" className="brand"><span className="brand-mark"><Icon name="leaf" size={20}/></span>AI Resume Screener</Link><span className="mobile-tag">HIRING WORKSPACE</span></header>
+      <div className="utility-bar"><div className="breadcrumb">Workspace <span>/</span> <strong>Talent screening</strong></div><div className="utility-right">Job descriptions <span className="breadcrumb"><span>/</span> Resumes <span>/</span> Candidate rankings</span></div></div>
       <main className="content-area">
         <Routes>
           <Route path="/" element={<Home Icon={Icon}/>}/>
@@ -55,7 +55,7 @@ export default function App() {
           <Route path="*" element={<div className="empty-state"><h2>Page not found</h2><Link to="/" className="button button-dark">Back to overview</Link></div>}/>
         </Routes>
       </main>
-      <footer className="app-footer"><span>fieldnote. <span className="footer-divider">/</span> AI Resume Screener</span><span>Built for clearer hiring decisions</span></footer>
+      <footer className="app-footer"><span>fieldnote. <span className="footer-divider">/</span> Candidate screening</span><span>Match resumes to job requirements</span></footer>
     </div>
   </div>;
 }
