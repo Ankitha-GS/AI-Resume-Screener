@@ -12,5 +12,5 @@ An intelligent recruitment platform designed to streamline the initial hiring pr
 
 **Tech Stack:** Python · FastAPI · React · PostgreSQL · Neon · Gemini API
 
-🔗 **[GitHub Repository](https://github.com/Ankitha-GS/AI-Resume-Screener)** | **[Live Demo](https://ai-resume-screener-xdfp.onrender.com/docs)**
+🔗 **[GitHub Repository](https://github.com/Ankitha-GS/AI-Resume-Screener)** | **[Live Demo](https://ai-resume-screener-one-sigma.vercel.app/)**
 
